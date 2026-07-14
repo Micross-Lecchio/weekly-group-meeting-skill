@@ -1,13 +1,15 @@
 ---
 name: managing-weekly-group-meetings
-description: Use when preparing recurring weekly group meetings, tracking labeled multi-week research tasks, maintaining weekly work records, generating meeting documents or presentations, or archiving completed project stages.
+description: Use when preparing recurring weekly group meetings, tracking labeled multi-week research tasks, handling [非任务] workspace-rule maintenance sessions, maintaining per-task weekly workspaces, generating meeting documents or presentations, or archiving completed project stages.
 ---
 
 # Managing Weekly Group Meetings
 
 ## Overview
 
-Use this Skill to manage long-running, labeled tasks across weekly group meetings. Keep the global task dashboard, weekly records, temporary files, deliverables, and completed-stage archives consistent.
+Use this Skill to manage long-running, labeled tasks across weekly group meetings. Keep the global task dashboard, weekly records, task-local temporary files, task-local deliverables, and completed-stage archives consistent.
+
+`[非任务]` sessions are maintenance or rule-editing sessions for the workspace itself. They bypass stage-task registration and must not be forced into a permanent research-task label.
 
 Project-specific permissions and file boundaries are defined by the root `AGENTS.md` and always take priority.
 
@@ -22,6 +24,23 @@ weekly/
 completed-projects/
 ```
 
+Each week contains one folder per active task:
+
+```text
+weekly/YYYY-Www/
+├─ README.md
+├─ tasks/
+│  └─ [label]任务名称/
+│     ├─ [label]任务记录.md
+│     ├─ temporary/
+│     ├─ deliverables/
+│     └─ working/
+├─ deliverables/
+└─ non-task/
+```
+
+Use root-level `weekly/YYYY-Www/deliverables/` only for cross-task weekly summaries or group-meeting materials. Use `weekly/YYYY-Www/non-task/` only for `[非任务]` maintenance notes.
+
 Templates are stored beside this Skill in `templates/`. The helper script is `scripts/init_week.py`.
 
 ## Trigger Conditions
@@ -33,7 +52,8 @@ Use this Skill when the user:
 - requests a weekly summary, Word document, or presentation;
 - asks to review earlier work with the same label;
 - pauses, resumes, completes, or archives a multi-week task;
-- asks to view or update the overall task progress.
+- asks to view or update the overall task progress;
+- starts a `[非任务]` maintenance session to update workspace rules, the Skill, templates, scripts, indexes, or directory organization.
 
 Do not use it for unrelated one-off work that does not belong to the weekly group-meeting workspace.
 
@@ -46,6 +66,15 @@ Read the root `AGENTS.md` before making changes.
 Never access paths outside the project root without explicit user authorization.
 
 ### 2. Validate the Label
+
+If the user explicitly prefixes a request with `[非任务]`:
+
+- treat it as a workspace-maintenance session;
+- do not require a research-task label;
+- do not create or update a stage-task row in `TASKS.md`;
+- do not create a formal task record or task deliverable unless the user explicitly asks;
+- place optional maintenance notes under `weekly/YYYY-Www/non-task/`;
+- still read local rules, protect files, and verify any changes.
 
 Each stage task requires a label in square brackets, for example:
 
@@ -65,6 +94,8 @@ If the user omitted the label:
 ### 3. Read the Global Dashboard
 
 Read root `TASKS.md`.
+
+Skip this step only for `[非任务]` sessions that do not change stage-task progress.
 
 Determine whether the label already exists.
 
@@ -92,6 +123,12 @@ Use the helper script when suitable:
 python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py
 ```
 
+To initialize a task-local workspace:
+
+```bash
+python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py --week 2026-W29 --label "[paper]" --task-name "任务名称"
+```
+
 The script must not overwrite existing files.
 
 ### 5. Review History
@@ -111,7 +148,7 @@ Do not rely only on chat history.
 Store each work item at:
 
 ```text
-weekly/YYYY-Www/tasks/[label]任务名称.md
+weekly/YYYY-Www/tasks/[label]任务名称/[label]任务记录.md
 ```
 
 Use `templates/task-record.md`.
@@ -137,13 +174,13 @@ It must show:
 Temporary work:
 
 ```text
-weekly/YYYY-Www/temporary/
+weekly/YYYY-Www/tasks/[label]任务名称/temporary/
 ```
 
 Formal results:
 
 ```text
-weekly/YYYY-Www/deliverables/
+weekly/YYYY-Www/tasks/[label]任务名称/deliverables/
 ```
 
 All formal result filenames begin with the task label:
@@ -154,6 +191,14 @@ All formal result filenames begin with the task label:
 
 Do not overwrite existing formal deliverables unless the user explicitly requests it. Prefer version suffixes.
 
+Use:
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/working/
+```
+
+for task-specific source trees, drafts, scripts, extracted text, calculation folders, or other files that are neither temporary scratch nor final deliverables. If an existing root-level working tree is already referenced by tests or code paths, leave it in place and document ownership from the task record instead of moving it.
+
 ### 8. Update All Three Records
 
 Before ending a work session, synchronize:
@@ -161,6 +206,8 @@ Before ending a work session, synchronize:
 1. root `TASKS.md`;
 2. weekly `README.md`;
 3. the labeled task record.
+
+For `[非任务]` sessions, synchronize only the files directly affected by the maintenance work. Do not invent dashboard rows.
 
 Update progress immediately after material changes, including:
 
@@ -178,8 +225,8 @@ Update progress immediately after material changes, including:
 When the user asks for a weekly summary, document, or presentation:
 
 1. read the current weekly README;
-2. read current-week task records;
-3. inspect relevant deliverables;
+2. read current-week task records under `tasks/*/[label]任务记录.md`;
+3. inspect relevant task-local deliverables and cross-task weekly deliverables;
 4. read earlier records only when needed for context;
 5. emphasize results, methods, problems, and next steps;
 6. exclude unnecessary temporary details;
@@ -256,6 +303,8 @@ Execution weeks use Chinese separators:
 
 Do not add weeks in which no work occurred.
 
+`[非任务]` maintenance sessions never appear in `TASKS.md`.
+
 ## Error Handling
 
 Stop and inform the user when:
@@ -267,6 +316,8 @@ Stop and inform the user when:
 - a destructive or irreversible change may occur;
 - a file cannot be safely modified;
 - `TASKS.md` cannot be updated.
+
+For `[非任务]`, do not stop for a missing stage-task label; continue under the non-task maintenance rules.
 
 Never claim the dashboard or files were updated when writing failed.
 
@@ -291,8 +342,10 @@ At the end of each work session report:
 ## Common Mistakes
 
 - Inventing a label when the user forgot one.
+- Treating `[非任务]` as a normal stage-task label.
 - Creating deliverables without a task record.
 - Mixing temporary files and formal deliverables.
+- Placing different tasks' temporary files or deliverables in the same weekly folder.
 - Creating duplicate rows for the same stage task.
 - Changing the original start date on resumed work.
 - Adding weeks where no work occurred.

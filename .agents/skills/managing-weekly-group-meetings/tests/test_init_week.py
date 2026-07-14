@@ -27,6 +27,12 @@ class InitWeekTests(unittest.TestCase):
         (templates / "task-dashboard.md").write_text(
             "# 阶段任务清单\n", encoding="utf-8"
         )
+        (templates / "task-record.md").write_text(
+            "# {{LABEL}} {{TASK_NAME}}\n"
+            "- 所属周：{{ISO_WEEK}}\n"
+            "- 创建日期：{{DATE}}\n",
+            encoding="utf-8",
+        )
 
     def tearDown(self):
         self.temp.cleanup()
@@ -37,8 +43,8 @@ class InitWeekTests(unittest.TestCase):
     def test_initialize_creates_expected_structure(self):
         created = MODULE.initialize(self.root, "2026-W29")
         self.assertTrue((self.root / "weekly/2026-W29/tasks").is_dir())
-        self.assertTrue((self.root / "weekly/2026-W29/temporary").is_dir())
         self.assertTrue((self.root / "weekly/2026-W29/deliverables").is_dir())
+        self.assertTrue((self.root / "weekly/2026-W29/non-task").is_dir())
         self.assertTrue((self.root / "completed-projects").is_dir())
         self.assertTrue((self.root / "TASKS.md").is_file())
         self.assertIn("weekly/2026-W29/README.md", created)
@@ -58,6 +64,33 @@ class InitWeekTests(unittest.TestCase):
     def test_invalid_week_is_rejected(self):
         with self.assertRaises(ValueError):
             MODULE.initialize(self.root, "2026-29")
+
+    def test_initialize_task_workspace_creates_isolated_directories(self):
+        created = MODULE.initialize_task_workspace(
+            self.root,
+            "2026-W29",
+            "[paper]",
+            "返修计划",
+        )
+
+        task_dir = self.root / "weekly/2026-W29/tasks/[paper]返修计划"
+        self.assertTrue((task_dir / "temporary").is_dir())
+        self.assertTrue((task_dir / "deliverables").is_dir())
+        self.assertTrue((task_dir / "working").is_dir())
+        self.assertTrue((task_dir / "[paper]任务记录.md").is_file())
+        self.assertIn(
+            "weekly/2026-W29/tasks/[paper]返修计划/[paper]任务记录.md",
+            created,
+        )
+
+    def test_initialize_task_workspace_rejects_invalid_label(self):
+        with self.assertRaises(ValueError):
+            MODULE.initialize_task_workspace(
+                self.root,
+                "2026-W29",
+                "paper",
+                "返修计划",
+            )
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@
 - 创建日期：{{DATE}}
 - 最近更新：{{DATE}}
 - 当前状态：进行中
+- 任务工作区：{{TASK_WORKSPACE}}
 - 用户原始要求：
 
 ## 任务目标
@@ -15,6 +16,12 @@
 
 | 文件或资料 | 位置 | 用途 | 是否允许修改 |
 |---|---|---|---|
+
+## 任务局部目录
+
+- 临时文件：`{{TASK_WORKSPACE}}/temporary/`
+- 正式成果：`{{TASK_WORKSPACE}}/deliverables/`
+- 工作文件：`{{TASK_WORKSPACE}}/working/`
 
 ## 历史工作回顾
 

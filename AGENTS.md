@@ -10,6 +10,8 @@
 managing-weekly-group-meetings
 ```
 
+用户可以使用 `[非任务]` 发起工作区维护会话。此类会话用于修改根目录规则、Skill、模板、脚本或目录组织，不作为阶段性研究任务登记，不要求长期任务标签，不写入 `TASKS.md`。
+
 Skill 默认位置：
 
 ```text
@@ -41,6 +43,8 @@ Skill 默认位置：
 
 ## 3. 标签规则
 
+`[非任务]` 是唯一例外：它不是阶段任务标签，不进入 `TASKS.md`，不归档为阶段项目。
+
 用户发布阶段性任务时必须提供标签，例如：
 
 ```text
@@ -71,8 +75,13 @@ Skill 默认位置：
 │  └─ YYYY-Www/
 │     ├─ README.md
 │     ├─ tasks/
-│     ├─ temporary/
-│     └─ deliverables/
+│     │  └─ [label]任务名称/
+│     │     ├─ [label]任务记录.md
+│     │     ├─ temporary/
+│     │     ├─ deliverables/
+│     │     └─ working/
+│     ├─ deliverables/
+│     └─ non-task/
 ├─ completed-projects/
 │  └─ [label]阶段任务名称/
 │     ├─ README.md
@@ -83,7 +92,27 @@ Skill 默认位置：
       └─ managing-weekly-group-meetings/
 ```
 
-临时文件必须放入当周的 `temporary/`，重要成果必须放入当周的 `deliverables/`。
+不同阶段任务必须放入当周 `tasks/` 下各自独立的任务文件夹，避免临时文件、脚本、输入文件和成果互相干扰。
+
+任务临时文件必须放入：
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/temporary/
+```
+
+任务正式成果必须放入：
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/deliverables/
+```
+
+任务工作文件、源代码原型、计算文件夹、抽取文本等放入：
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/working/
+```
+
+当周根层 `deliverables/` 仅用于跨任务周报或整周组会材料。`non-task/` 仅用于 `[非任务]` 维护记录。
 
 ## 5. 全局任务清单
 
@@ -112,7 +141,7 @@ TASKS.md
 每周的每一项实际工作都必须有独立 Markdown 记录，放入：
 
 ```text
-weekly/YYYY-Www/tasks/[label]任务名称.md
+weekly/YYYY-Www/tasks/[label]任务名称/[label]任务记录.md
 ```
 
 记录应包含目标、输入、过程、判断、临时文件、正式成果、当前结果、未解决问题和下一步。
@@ -141,6 +170,8 @@ weekly/YYYY-Www/tasks/[label]任务名称.md
 - 必要的历史记录；
 
 整理汇报材料，并将正式文件放入当周 `deliverables/`。
+
+单任务汇报材料应优先放入该任务自己的 `deliverables/`；整周综合材料才放入当周根层 `deliverables/`。
 
 ## 9. 文件安全
 

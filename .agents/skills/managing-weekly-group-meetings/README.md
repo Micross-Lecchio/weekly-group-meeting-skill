@@ -29,7 +29,27 @@ python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py
 python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py --week 2026-W29
 ```
 
+初始化指定周内的任务工作区：
+
+```bash
+python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py --week 2026-W29 --label "[paper]" --task-name "任务名称"
+```
+
 脚本只创建缺失内容，不覆盖已有文件。
+
+## 目录结构
+
+每周不同任务应放入独立工作区：
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/
+├─ [label]任务记录.md
+├─ temporary/
+├─ deliverables/
+└─ working/
+```
+
+`[非任务]` 规则维护和目录维护记录可放入 `weekly/YYYY-Www/non-task/`，不写入 `TASKS.md`。
 
 ## 测试
 
