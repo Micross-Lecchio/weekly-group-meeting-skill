@@ -47,9 +47,12 @@ weekly/YYYY-Www/tasks/[label]任务名称/
 ├─ temporary/
 ├─ deliverables/
 └─ working/
+   └─ control/
 ```
 
 `[非任务]` 规则维护和目录维护记录可放入 `weekly/YYYY-Www/non-task/`，不写入 `TASKS.md`。
+
+任务相关的 Handoff、TASK、PLAN、PROGRESS、DECISIONS、研究原型和脚本不得放在项目根目录；默认放入对应任务工作区，控制文件放入 `working/control/`。
 
 ## 测试
 

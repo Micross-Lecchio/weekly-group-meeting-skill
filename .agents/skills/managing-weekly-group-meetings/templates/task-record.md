@@ -22,6 +22,7 @@
 - 临时文件：`{{TASK_WORKSPACE}}/temporary/`
 - 正式成果：`{{TASK_WORKSPACE}}/deliverables/`
 - 工作文件：`{{TASK_WORKSPACE}}/working/`
+- 控制文件：`{{TASK_WORKSPACE}}/working/control/`
 
 ## 历史工作回顾
 

@@ -77,6 +77,7 @@ class InitWeekTests(unittest.TestCase):
         self.assertTrue((task_dir / "temporary").is_dir())
         self.assertTrue((task_dir / "deliverables").is_dir())
         self.assertTrue((task_dir / "working").is_dir())
+        self.assertTrue((task_dir / "working/control").is_dir())
         self.assertTrue((task_dir / "[paper]任务记录.md").is_file())
         self.assertIn(
             "weekly/2026-W29/tasks/[paper]返修计划/[paper]任务记录.md",

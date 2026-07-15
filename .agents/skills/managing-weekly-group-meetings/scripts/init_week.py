@@ -115,6 +115,7 @@ def initialize_task_workspace(
         task_dir / "temporary",
         task_dir / "deliverables",
         task_dir / "working",
+        task_dir / "working" / "control",
     ]:
         if not directory.exists():
             directory.mkdir(parents=True, exist_ok=True)

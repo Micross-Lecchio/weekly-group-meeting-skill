@@ -13,6 +13,8 @@ Use this Skill to manage long-running, labeled tasks across weekly group meeting
 
 Project-specific permissions and file boundaries are defined by the root `AGENTS.md` and always take priority.
 
+Root pollution is a hard failure. For labeled tasks, do not create task-generated files directly under the project root or weekly root. Resolve the task workspace first, then write every task artifact under that workspace.
+
 ## Required Files
 
 At the project root:
@@ -35,6 +37,7 @@ weekly/YYYY-Www/
 │     ├─ temporary/
 │     ├─ deliverables/
 │     └─ working/
+│        └─ control/
 ├─ deliverables/
 └─ non-task/
 ```
@@ -64,6 +67,8 @@ Do not use it for unrelated one-off work that does not belong to the weekly grou
 Read the root `AGENTS.md` before making changes.
 
 Never access paths outside the project root without explicit user authorization.
+
+Users should not need to remind Codex to read the rules. When this Skill applies, proactively read `AGENTS.md`, this `SKILL.md`, and the relevant indexes before writing.
 
 ### 2. Validate the Label
 
@@ -130,6 +135,40 @@ python .agents/skills/managing-weekly-group-meetings/scripts/init_week.py --week
 ```
 
 The script must not overwrite existing files.
+
+### 4.5 Resolve the Task Workspace Before Writing
+
+Before creating, editing, extracting, generating, or moving any task file, determine:
+
+```text
+TASK_WORKSPACE = weekly/YYYY-Www/tasks/[label]任务名称/
+```
+
+Then use these destinations:
+
+| Artifact type | Required location |
+|---|---|
+| task record | `TASK_WORKSPACE/[label]任务记录.md` |
+| handoff, task plan, progress, decisions | `TASK_WORKSPACE/working/control/` |
+| prototype code, research source tree, calculation workspace | `TASK_WORKSPACE/working/` |
+| extracted text, scratch notes, caches, drafts | `TASK_WORKSPACE/temporary/` |
+| formal task deliverables | `TASK_WORKSPACE/deliverables/` |
+
+Do not create these task-generated names at the project root:
+
+```text
+Handoff.md
+TASK.md
+PLAN.md
+PROGRESS.md
+DECISIONS.md
+research/
+docs/
+scripts/
+outputs/
+```
+
+If the user asks for a "root" Handoff or plan for a labeled task, create it under `TASK_WORKSPACE/working/control/` and record the path in the task record and weekly README. Only write a task-generated file to the project root if the user explicitly confirms that they want to violate the workspace rule for that exact file.
 
 ### 5. Review History
 
@@ -198,6 +237,16 @@ weekly/YYYY-Www/tasks/[label]任务名称/working/
 ```
 
 for task-specific source trees, drafts, scripts, extracted text, calculation folders, or other files that are neither temporary scratch nor final deliverables. If an existing root-level working tree is already referenced by tests or code paths, leave it in place and document ownership from the task record instead of moving it.
+
+Use:
+
+```text
+weekly/YYYY-Www/tasks/[label]任务名称/working/control/
+```
+
+for task-local `Handoff.md`, `TASK.md`, `PLAN.md`, `PROGRESS.md`, `DECISIONS.md`, implementation plans, and other control files.
+
+If a previous session created task artifacts in the project root or week root, move them into the task workspace without deleting or overwriting, then update every path reference and index before ending.
 
 ### 8. Update All Three Records
 
@@ -346,6 +395,8 @@ At the end of each work session report:
 - Creating deliverables without a task record.
 - Mixing temporary files and formal deliverables.
 - Placing different tasks' temporary files or deliverables in the same weekly folder.
+- Creating `Handoff.md`, `TASK.md`, `PLAN.md`, `PROGRESS.md`, `DECISIONS.md`, `research/`, or similar task artifacts in the project root.
+- Leaving generated task files in the week root instead of the task workspace.
 - Creating duplicate rows for the same stage task.
 - Changing the original start date on resumed work.
 - Adding weeks where no work occurred.
